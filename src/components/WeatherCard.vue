@@ -47,11 +47,10 @@ export default {
             "+&appid=b203fc1026c241d3e13b9713a3665286&lang=hu"
         )
         .then((response) => {
-
-
           // console.log(JSON.stringify(response.data));
-           this.data = response.data;
-           console.log(response.data.coord.lat + " " + response.data.coord.lon);
+          var latAndLon = response.data.coord;
+          this.data = response.data;
+          console.log(latAndLon);
           // this.cityData.temperature = response.data.main.temp;
           // this.cityData.feelsLike = response.data.main.feels_like;
           // this.cityData.humidity = response.data.main.humidity;
@@ -61,6 +60,19 @@ export default {
           // this.cityData.weatherDesc = response.data.weather[0].description;
           // this.cityData.clouds = response.data.clouds.all;
           // console.log(response.data.weather);
+        })
+        .then((latAndLon) => {
+          axios
+            .get(
+              "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+                latAndLon.lat +
+                "&lon=" +
+                latAndLon.lon +
+                "&exclude=daily&appid=b203fc1026c241d3e13b9713a3665286"
+            )
+            .then((response) => {
+              console.log("asdA" + response);
+            });
         })
         .catch((err) => {
           console.log(err);
