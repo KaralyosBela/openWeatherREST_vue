@@ -9,6 +9,7 @@ export default new Vuex.Store({
     dailyWeatherData: [],
     hourlyWeatherData: [],
     weatherAlerts: [],
+    loaded: false
   },
   mutations: {
     setWeatherData(state, payload){
@@ -16,6 +17,7 @@ export default new Vuex.Store({
       state.currentWeatherData = payload.current;
       state.hourlyWeatherData = payload.hourly;
       state.weatherAlerts = payload.alerts;
+      state.loaded = true;
     }
   },
   actions: {

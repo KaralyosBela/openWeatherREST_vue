@@ -21,9 +21,8 @@
           class="mx-4"
           ticks
           track-fill-color="blue"
-          @change="show()"
         ></v-slider>
-        {{ weatherData }}
+        <p v-if="this.$store.state.loaded">{{ weatherData.temp }}</p>
       </v-card-text>
     </v-card>
   </div>
@@ -49,18 +48,12 @@ export default {
         value: value,
       });
     },
-    show() {
-      console.log(this.pickedDay);
-      // console.log(this.$store.state.dailyWeatherData);
-      // console.log(this.$store.state.currentWeatherData);
-      // console.log(this.$store.state.hourlyWeatherData);
-      // console.log(this.$store.state.weatherAlerts);
-    },
   },
 
   computed: {
     weatherData() {
-      return this.$store.state.dailyWeatherData;
+      var x = this.pickedDay;
+      return this.$store.state.dailyWeatherData[x];
     },
     nextSevenDays() {
       var days = [];
@@ -74,9 +67,10 @@ export default {
   },
   created() {
     this.cities = cities.filter((x) => x.country == "HU");
-      this.$store.dispatch("fetchWeatherData", {
-        value: "Budapest",
-      });
+
+    this.$store.dispatch("fetchWeatherData", {
+      value: "Budapest",
+    });
   },
 };
 </script>
