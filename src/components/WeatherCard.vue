@@ -4,69 +4,139 @@
       :items="cities"
       item-text="name"
       label="Search a city"
-      v-model="value"
-      @change="getData(value)"
+      v-model="city"
+      @change="getWeatherData(city)"
     ></v-autocomplete>
-
-    <div v-for="(item, index) in cityData" :key="index">
-      {{ item }}
-    </div>
+    <!-- <v-card class="my-4">
+      <v-card-title primary-title> </v-card-title>
+      <v-card-subtitle> Weather </v-card-subtitle>
+      <v-card-text>
+        <v-slider
+          v-model="pickedDay"
+          max="6"
+          :tick-labels="nextSevenDays"
+          class="mx-4"
+          ticks
+          track-fill-color="blue"
+        ></v-slider>
+        <p v-if="this.$store.state.loaded">{{ weatherData.temp }}</p>
+      </v-card-text>
+    </v-card> -->
+    <v-card v-if="city">
+      <v-card-title primary-title>
+        {{ city }}
+      </v-card-title>
+      <v-card-text v-if="this.$store.state.loaded">
+        <v-row align="center" justify="center">
+          <v-col>
+            Temperature {{ currentWeather.temp }} &deg;C <br />
+            Feels like {{ currentWeather.feels_like }} &deg;C <br />
+            {{ currentTime.time + " " + currentTime.day }} <br />
+            {{ currentWeather.weather[0].main }} <br />
+            {{ currentWeather.weather[0].description }}
+          </v-col>
+          <v-col>
+            Daytime {{ currentWeather.dt }} <br />
+            Sunrise {{ currentWeather.sunrise }} <br />
+            Sunset {{ currentWeather.sunset }} <br />
+          </v-col>
+          <v-col>
+            Humidity {{ currentWeather.humidity }} <br />
+            Pressure {{ currentWeather.pressure }} <br />
+            Windspeed {{ currentWeather.wind_speed }} <br />
+          </v-col>
+        </v-row>
+        <v-row align="center" justify="center">
+          <v-col>
+            <div v-for="(item, index) in alerts" :key="index">
+              {{ item.sender_name }} <br />
+              {{ item.event }} <br />
+              {{ item.start }} <br />
+              {{ item.end }} <br />
+              {{ item.description }} <br />
+            </div>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import cities from "cities.json";
 import accents from "remove-accents";
 export default {
   name: "WeatherCard",
   data() {
     return {
-      value: "",
+      pickedDay: "0",
+      city: "",
       data: "",
       cities: [],
-      cityData: {
-        weather: "",
-        weatherDesc: "",
-        feelsLike: "",
-        temperature: "",
-        humidity: "",
-        clouds: "",
-        windspeed: "",
-        windDirection: "",
+      alerts: [],
+      currentTime: {
+        interval: null,
+        time: null,
+        day: null,
       },
     };
   },
   methods: {
-    getData(value) {
+    getWeatherData(value) {
       value = accents.remove(value);
-      axios
-        .get(
-          "http://api.openweathermap.org/data/2.5/weather?q=" +
-            value +
-            "+&appid=b203fc1026c241d3e13b9713a3665286&lang=hu"
-        )
-        .then((response) => {
-          console.log(JSON.stringify(response.data));
-          this.data = response.data;
-          this.cityData.temperature = response.data.main.temp;
-          this.cityData.feelsLike = response.data.main.feels_like;
-          this.cityData.humidity = response.data.main.humidity;
-          this.cityData.windspeed = response.data.wind.speed;
-          this.cityData.windDirection = response.data.wind.deg;
-          this.cityData.weather = response.data.weather[0].main;
-          this.cityData.weatherDesc = response.data.weather[0].description;
-          this.cityData.clouds = response.data.clouds.all;
-          console.log(response.data.weather);
-        })
-        .catch((err) => {
-          console.log(err);
-          this.data = "";
-        });
+      this.$store.dispatch("fetchWeatherData", {
+        value: value,
+      });
+          this.alerts = this.$store.state.weatherAlerts;
+
+    },
+  },
+
+  computed: {
+    currentWeather() {
+      //var x = this.pickedDay;
+      return this.$store.state.currentWeatherData;
+    },
+    nextSevenDays() {
+      var days = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date();
+        d.setDate(d.getDate() + i);
+        days.push(d.toISOString().slice(5, 10));
+      }
+      return days;
     },
   },
   created() {
+    //Magyar városok kiválasztása
     this.cities = cities.filter((x) => x.country == "HU");
+
+    // this.$store.dispatch("fetchWeatherData", {
+    //   value: "Budapest",
+    // });
+
+    //aktualis nap beállítása
+    var weekDays = [
+      "Hétfő",
+      "Kedd",
+      "Szerda",
+      "Csütörtök",
+      "Péntek",
+      "Szombat",
+      "Vasárnap",
+    ];
+    var day = new Date().getDay();
+    this.currentTime.day = weekDays[day - 1];
+
+    this.currentTime.interval = setInterval(() => {
+      // Concise way to format time according to system locale.
+      // In my case this returns "3:48:00 am"
+      this.currentTime.time = Intl.DateTimeFormat(navigator.language, {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      }).format();
+    }, 1000);
   },
 };
 </script>
