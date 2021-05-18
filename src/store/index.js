@@ -35,7 +35,7 @@ export default new Vuex.Store({
                 response.data.coord.lat +
                 "&lon=" +
                 response.data.coord.lon +
-                "&units=metric&appid=b203fc1026c241d3e13b9713a3665286"
+                "&lang=hu&units=metric&appid=b203fc1026c241d3e13b9713a3665286"
             )
             .then((response) => {
               console.log(response.data);
