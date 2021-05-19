@@ -39,7 +39,7 @@ export default new Vuex.Store({
             "+&appid=b203fc1026c241d3e13b9713a3665286&lang=hu"
         )
         .then((response) => {
-          //console.log("elso axios megtortent");
+          console.log("elso axios megtortent");
           axios
             .get(
               "https://api.openweathermap.org/data/2.5/onecall?lat=" +
@@ -49,7 +49,7 @@ export default new Vuex.Store({
                 "&lang=hu&units=metric&appid=b203fc1026c241d3e13b9713a3665286"
             )
             .then((response) => {
-              //console.log("masodik axios megtortent");
+              console.log("masodik axios megtortent");
               //console.log(response.data);
               //commit("setWeatherData",response.data);
               commit("setWeatherData", {

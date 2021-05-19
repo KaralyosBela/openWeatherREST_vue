@@ -26,7 +26,16 @@
     <v-card v-if="this.$store.state.loaded">
       <v-card-title primary-title>
         {{ cityName }}
+        <v-img
+          id="img"
+          lazy-src="https://picsum.photos/id/11/10/6"
+          max-height="50"
+          max-width="50"
+          :src="weatherIcon"
+        >
+        </v-img>
       </v-card-title>
+
       <v-card-text>
         <v-row align="center" justify="center">
           <v-col>
@@ -35,6 +44,7 @@
             {{ currentTime.time + " " + currentTime.day }} <br />
             {{ currentWeather.weather[0].main }} <br />
             {{ currentWeather.weather[0].description }}
+            {{ currentWeather.weather[0].icon }}
           </v-col>
           <v-col>
             Daytime {{ currentWeather.dt }} <br />
@@ -48,14 +58,19 @@
           </v-col>
         </v-row>
         <v-row align="center" justify="center">
-          <v-col>
-            <div v-for="(item, index) in alerts" :key="index">
+          <v-col
+            cols="12"
+            class="mx-auto"
+            v-for="(item, index) in alerts"
+            :key="index"
+          >
+            <v-alert type="warning">
               {{ item.sender_name }} <br />
               {{ item.event }} <br />
               {{ item.start }} <br />
               {{ item.end }} <br />
               {{ item.description }} <br />
-            </div>
+            </v-alert>
           </v-col>
         </v-row>
       </v-card-text>
@@ -75,6 +90,7 @@ export default {
       data: "",
       cities: [],
       alerts: [],
+      weatherIcon: "",
       currentTime: {
         interval: "",
         time: "",
@@ -90,9 +106,13 @@ export default {
         cityName = accents.remove(cityName);
         this.$store.dispatch("fetchWeatherData", {
           cityName: cityName,
-          cityNameOriginal: cityNameOriginal
+          cityNameOriginal: cityNameOriginal,
         });
         this.alerts = this.$store.state.weatherAlerts;
+        this.weatherIcon =
+          "http://openweathermap.org/img/wn/" +
+          this.currentWeather.weather[0].icon +
+          ".png";
       }
     },
   },
@@ -102,7 +122,7 @@ export default {
       //var x = this.pickedDay;
       return this.$store.state.currentWeatherData;
     },
-    cityName(){
+    cityName() {
       return this.$store.state.cityName;
     },
     nextSevenDays() {
