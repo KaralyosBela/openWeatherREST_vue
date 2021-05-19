@@ -9,15 +9,25 @@ export default new Vuex.Store({
     dailyWeatherData: [],
     hourlyWeatherData: [],
     weatherAlerts: [],
-    loaded: false
+    loaded: false,
+    cityName: ""
   },
   mutations: {
     setWeatherData(state, payload){
-      state.dailyWeatherData = payload.daily;
-      state.currentWeatherData = payload.current;
-      state.hourlyWeatherData = payload.hourly;
-      state.weatherAlerts = payload.alerts;
+      state.dailyWeatherData = payload.responseData.daily;
+      state.currentWeatherData = payload.responseData.current;
+      state.hourlyWeatherData = payload.responseData.hourly;
+      state.weatherAlerts = payload.responseData.alerts;
+      state.cityName = payload.cityName;
       state.loaded = true;
+    },
+    setEmpty(state, payload){
+      state.dailyWeatherData = payload;
+      state.currentWeatherData = payload;
+      state.hourlyWeatherData = payload;
+      state.weatherAlerts = payload;
+      state.loaded = false;
+      state.cityName = "";
     }
   },
   actions: {
@@ -25,10 +35,11 @@ export default new Vuex.Store({
       axios
         .get(
           "http://api.openweathermap.org/data/2.5/weather?q=" +
-          payload.value +
+          payload.cityName +
             "+&appid=b203fc1026c241d3e13b9713a3665286&lang=hu"
         )
         .then((response) => {
+          //console.log("elso axios megtortent");
           axios
             .get(
               "https://api.openweathermap.org/data/2.5/onecall?lat=" +
@@ -38,13 +49,20 @@ export default new Vuex.Store({
                 "&lang=hu&units=metric&appid=b203fc1026c241d3e13b9713a3665286"
             )
             .then((response) => {
-              console.log(response.data);
-              commit("setWeatherData",response.data);
+              //console.log("masodik axios megtortent");
+              //console.log(response.data);
+              //commit("setWeatherData",response.data);
+              commit("setWeatherData", {
+                responseData: response.data,
+                cityName: payload.cityNameOriginal
+              })
+
             });
         })
         .catch((err) => {
           console.log(err);
-          this.data = "";
+          this.commit("setEmpty","");
+          //this.data = "";
         });
     },
   },

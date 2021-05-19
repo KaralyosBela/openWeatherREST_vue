@@ -6,6 +6,7 @@
       label="Search a city"
       v-model="city"
       @change="getWeatherData(city)"
+      @keyup.enter="getWeatherData(city)"
     ></v-autocomplete>
     <!-- <v-card class="my-4">
       <v-card-title primary-title> </v-card-title>
@@ -22,11 +23,11 @@
         <p v-if="this.$store.state.loaded">{{ weatherData.temp }}</p>
       </v-card-text>
     </v-card> -->
-    <v-card v-if="city">
+    <v-card v-if="this.$store.state.loaded">
       <v-card-title primary-title>
-        {{ city }}
+        {{ cityName }}
       </v-card-title>
-      <v-card-text v-if="this.$store.state.loaded">
+      <v-card-text>
         <v-row align="center" justify="center">
           <v-col>
             Temperature {{ currentWeather.temp }} &deg;C <br />
@@ -75,20 +76,24 @@ export default {
       cities: [],
       alerts: [],
       currentTime: {
-        interval: null,
-        time: null,
-        day: null,
+        interval: "",
+        time: "",
+        day: "",
       },
     };
   },
   methods: {
-    getWeatherData(value) {
-      value = accents.remove(value);
-      this.$store.dispatch("fetchWeatherData", {
-        value: value,
-      });
-          this.alerts = this.$store.state.weatherAlerts;
-
+    getWeatherData(cityName) {
+      if (cityName != null) {
+        console.log(cityName);
+        var cityNameOriginal = cityName;
+        cityName = accents.remove(cityName);
+        this.$store.dispatch("fetchWeatherData", {
+          cityName: cityName,
+          cityNameOriginal: cityNameOriginal
+        });
+        this.alerts = this.$store.state.weatherAlerts;
+      }
     },
   },
 
@@ -96,6 +101,9 @@ export default {
     currentWeather() {
       //var x = this.pickedDay;
       return this.$store.state.currentWeatherData;
+    },
+    cityName(){
+      return this.$store.state.cityName;
     },
     nextSevenDays() {
       var days = [];
