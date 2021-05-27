@@ -8,6 +8,10 @@
       @change="getWeatherData(city)"
       @keyup.enter="getWeatherData(city)"
     ></v-autocomplete>
+    <v-alert v-if="this.$store.state.error" type="error" >
+          {{errorMessage}}
+
+    </v-alert>
     <!-- <v-card class="my-4">
       <v-card-title primary-title> </v-card-title>
       <v-card-subtitle> Weather </v-card-subtitle>
@@ -108,11 +112,19 @@ export default {
           cityName: cityName,
           cityNameOriginal: cityNameOriginal,
         });
-        this.alerts = this.$store.state.weatherAlerts;
-        this.weatherIcon =
-          "http://openweathermap.org/img/wn/" +
-          this.currentWeather.weather[0].icon +
-          ".png";
+
+        
+        setTimeout(() => { //kellett mert az első város kiválasztásánál még nem töltötte be a jsont a vuexbe
+          console.log(this.currentWeather);
+          this.alerts = this.$store.state.weatherAlerts;
+          this.weatherIcon =
+            "http://openweathermap.org/img/wn/" +
+            this.currentWeather.weather[0].icon +
+            ".png";
+                    console.log(this.errorMessage);
+
+        }, 300);
+
       }
     },
   },
@@ -124,6 +136,9 @@ export default {
     },
     cityName() {
       return this.$store.state.cityName;
+    },
+    errorMessage(){
+      return this.$store.state.errorMessage;
     },
     nextSevenDays() {
       var days = [];
@@ -165,6 +180,7 @@ export default {
         second: "numeric",
       }).format();
     }, 1000);
+    
   },
 };
 </script>
