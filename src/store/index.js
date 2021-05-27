@@ -10,8 +10,10 @@ export default new Vuex.Store({
     hourlyWeatherData: [],
     weatherAlerts: [],
     loaded: false,
-    cityName: ""
-  },
+    cityName: "",
+    errorMessage: "",
+    error: false
+    },
   mutations: {
     setWeatherData(state, payload){
       state.dailyWeatherData = payload.responseData.daily;
@@ -28,6 +30,10 @@ export default new Vuex.Store({
       state.weatherAlerts = payload;
       state.loaded = false;
       state.cityName = "";
+    },
+    setError(state, payload){
+        state.errorMessage = payload.errorMessage;
+        state.error = payload.error;
     }
   },
   actions: {
@@ -50,18 +56,26 @@ export default new Vuex.Store({
             )
             .then((response) => {
               console.log("masodik axios megtortent");
-              //console.log(response.data);
+              console.log(response.data);
               //commit("setWeatherData",response.data);
               commit("setWeatherData", {
                 responseData: response.data,
                 cityName: payload.cityNameOriginal
-              })
+              });
+              this.commit("setError", {
+                error: false,
+                errorMessage: ""
+              });
 
             });
         })
         .catch((err) => {
           console.log(err);
           this.commit("setEmpty","");
+          this.commit("setError", {
+            error: true,
+            errorMessage: "Nincs ilyen hely."
+          });
           //this.data = "";
         });
     },
