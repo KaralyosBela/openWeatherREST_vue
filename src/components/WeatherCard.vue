@@ -8,11 +8,17 @@
       @change="getWeatherData(city)"
       @keyup.enter="getWeatherData(city)"
     ></v-autocomplete>
-    <v-alert v-if="this.$store.state.error" type="error" >
-          {{errorMessage}}
-
+    <v-alert v-if="this.$store.state.error" type="error">
+      {{ errorMessage }}
     </v-alert>
-    <!-- <v-card class="my-4">
+
+    <v-row align="center" justify="space-around" class="pb-2">
+      <v-col><v-btn block rounded color="primary">Hourly</v-btn></v-col>
+      <v-col><v-btn block rounded color="primary">Daily</v-btn></v-col>
+      <v-col><v-btn block rounded color="primary">Weekly</v-btn></v-col>
+    </v-row>
+
+    <v-card class="my-4">
       <v-card-title primary-title> </v-card-title>
       <v-card-subtitle> Weather </v-card-subtitle>
       <v-card-text>
@@ -23,10 +29,10 @@
           class="mx-4"
           ticks
           track-fill-color="blue"
+          @change="changePickedDay()"
         ></v-slider>
-        <p v-if="this.$store.state.loaded">{{ weatherData.temp }}</p>
       </v-card-text>
-    </v-card> -->
+    </v-card>
     <v-card v-if="this.$store.state.loaded">
       <v-card-title primary-title>
         {{ cityName }}
@@ -113,20 +119,20 @@ export default {
           cityNameOriginal: cityNameOriginal,
         });
 
-        
-        setTimeout(() => { //kellett mert az első város kiválasztásánál még nem töltötte be a jsont a vuexbe
+        setTimeout(() => {
+          //kellett mert az első város kiválasztásánál még nem töltötte be a jsont a vuexbe
           console.log(this.currentWeather);
           this.alerts = this.$store.state.weatherAlerts;
           this.weatherIcon =
             "http://openweathermap.org/img/wn/" +
             this.currentWeather.weather[0].icon +
             ".png";
-                    console.log(this.errorMessage);
-
-        }, 300);
-
+        }, 500);
       }
     },
+    // changePickedDay(){
+
+    // }
   },
 
   computed: {
@@ -137,7 +143,7 @@ export default {
     cityName() {
       return this.$store.state.cityName;
     },
-    errorMessage(){
+    errorMessage() {
       return this.$store.state.errorMessage;
     },
     nextSevenDays() {
@@ -172,15 +178,12 @@ export default {
     this.currentTime.day = weekDays[day - 1];
 
     this.currentTime.interval = setInterval(() => {
-      // Concise way to format time according to system locale.
-      // In my case this returns "3:48:00 am"
       this.currentTime.time = Intl.DateTimeFormat(navigator.language, {
         hour: "numeric",
         minute: "numeric",
         second: "numeric",
       }).format();
     }, 1000);
-    
   },
 };
 </script>
