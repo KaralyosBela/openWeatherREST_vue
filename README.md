@@ -1,4 +1,14 @@
-# vuexrest
+# vuexrest :computer:
+
+## About The project
+In this project you can make an API call and get the weather forecast and weather data in every city in Hungary. You can do hourly forecast, daily and weekly.
+
+### Technologies used in this project
+
+* Vue.js for frontend
+* Vuex for state management
+* Vuetify for frontend
+* JS for backend
 
 ## Project setup
 ```
