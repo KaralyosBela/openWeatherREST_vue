@@ -45,6 +45,8 @@
         >
         </v-img>
       </v-card-title>
+      
+        <displayy/>  
 
       <v-card-text>
         <v-row align="center" justify="center">
@@ -91,8 +93,10 @@
 <script>
 import cities from "cities.json";
 import accents from "remove-accents";
+import Displayy from '../components/Display.vue'
 export default {
   name: "WeatherCard",
+  components: {Displayy},
   data() {
     return {
       pickedDay: "0",
