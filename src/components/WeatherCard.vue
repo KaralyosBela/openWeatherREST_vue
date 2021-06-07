@@ -59,7 +59,7 @@
             </v-list-item-content>
           </v-list-item></v-col
         >
-        <v-col cols="3" class=" d-flex justify-center">
+        <v-col cols="3" class="d-flex justify-center">
           <v-img
             id="img"
             lazy-src="https://picsum.photos/id/11/10/6"
@@ -114,6 +114,12 @@
         <v-col>
           {{ currentWeather.sunset }}
         </v-col>
+      </v-row>
+
+      <v-row class="d-flex justify-center">
+        <div class="pa-2">asd</div>
+        <div class="pa-2">asd</div>
+        <div class="pa-2">asd</div>
       </v-row>
 
       <v-row align="center" justify="center">
