@@ -40,8 +40,8 @@
       max-width="600"
       v-if="this.$store.state.loaded"
     >
-      <v-row align="center" justify="center">
-        <v-col cols="9">
+      <v-row>
+        <v-col cols="10">
           <v-list-item two-line>
             <v-list-item-content>
               <v-list-item-title class="text-h3">
@@ -59,16 +59,7 @@
             </v-list-item-content>
           </v-list-item></v-col
         >
-        <v-col cols="3" class=" d-flex justify-center">
-          <v-img
-            id="img"
-            lazy-src="https://picsum.photos/id/11/10/6"
-            max-height="100"
-            max-width="100"
-            :src="weatherIcon"
-          >
-          </v-img
-        ></v-col>
+        <v-col cols="2"></v-col>
       </v-row>
 
       <v-card-text>
