@@ -1,38 +1,23 @@
 <template>
   <div>
-    <v-autocomplete
-      :items="cities"
-      item-text="name"
-      label="Search a city"
-      v-model="city"
-      @change="getWeatherData(city)"
-      @keyup.enter="getWeatherData(city)"
-    ></v-autocomplete>
-    <v-alert v-if="this.$store.state.error" type="error">
-      {{ errorMessage }}
-    </v-alert>
-
+    <v-col cols="12" sm="6" md="6" lg="4" class="mx-auto">
+      <v-autocomplete
+        :items="cities"
+        item-text="name"
+        label="Search a city"
+        v-model="city"
+        @change="getWeatherData(city)"
+        @keyup.enter="getWeatherData(city)"
+      ></v-autocomplete>
+      <v-alert v-if="this.$store.state.error" type="error">
+        {{ errorMessage }}
+      </v-alert>
+    </v-col>
     <!-- <v-row align="center" justify="space-around" class="pb-2">
       <v-col><v-btn block rounded color="primary">Hourly</v-btn></v-col>
       <v-col><v-btn block rounded color="primary">Daily</v-btn></v-col>
       <v-col><v-btn block rounded color="primary">Weekly</v-btn></v-col>
-    </v-row>
-
-    <v-card class="my-4">
-      <v-card-title primary-title> </v-card-title>
-      <v-card-subtitle> Weather </v-card-subtitle>
-      <v-card-text>
-        <v-slider
-          v-model="pickedDay"
-          max="6"
-          :tick-labels="nextSevenDays"
-          class="mx-4"
-          ticks
-          track-fill-color="blue"
-          @change="changePickedDay()"
-        ></v-slider>
-      </v-card-text>
-    </v-card> -->
+    </v-row> -->
 
     <v-card
       rounded="lg"
@@ -52,7 +37,7 @@
                   currentTime.time +
                   " " +
                   currentTime.day +
-                  " " +
+                  ", " +
                   currentWeather.weather[0].description
                 }}
               </v-list-item-subtitle>
@@ -85,57 +70,26 @@
         </v-row>
       </v-card-text>
 
-      <v-row>
+      <v-row
+        align="center"
+        justify="space-around"
+        class="text-center pa-1 ma-1"
+      >
         <v-col>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-send</v-icon>
-            </v-list-item-icon>
-            {{ currentWeather.wind_speed }} km/h
-          </v-list-item>
+          <v-icon class="mb-1">mdi-windsock</v-icon>
+          {{ currentWeather.wind_speed }} km/h
         </v-col>
         <v-col>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-cloud-download</v-icon>
-            </v-list-item-icon>
-            {{ currentWeather.humidity }} %
-          </v-list-item>
-        </v-col>
-      </v-row>
-
-      <v-row align="center" justify="space-around" class="text-center">
-        <v-col>
-          {{ currentWeather.dt }}
+          <v-icon class="mb-1">mdi-water-percent</v-icon>
+          {{ currentWeather.humidity }} %
         </v-col>
         <v-col>
-          {{ currentWeather.sunrise }}
+          <v-icon class="mb-1">mdi-weather-sunset-up</v-icon>
+          {{ moment.unix(currentWeather.sunrise).format("LTS") }}
         </v-col>
         <v-col>
-          {{ currentWeather.sunset }}
-        </v-col>
-      </v-row>
-
-      <v-row class="d-flex justify-center">
-        <div class="pa-2">asd</div>
-        <div class="pa-2">asd</div>
-        <div class="pa-2">asd</div>
-      </v-row>
-
-      <v-row align="center" justify="center">
-        <v-col
-          cols="12"
-          class="mx-auto"
-          v-for="(item, index) in alerts"
-          :key="index"
-        >
-          <v-alert type="warning">
-            {{ item.sender_name }} <br />
-            {{ item.event }} <br />
-            {{ item.start }} <br />
-            {{ item.end }} <br />
-            {{ item.description }} <br />
-          </v-alert>
+          <v-icon class="mb-1">mdi-weather-sunset-down</v-icon>
+          {{ moment.unix(currentWeather.sunset).format("LTS") }}
         </v-col>
       </v-row>
 
@@ -149,16 +103,43 @@
         @change="changePickedDay()"
       ></v-slider>
     </v-card>
+
+    <v-card
+      rounded="lg"
+      class="mx-auto ma-2 pa-2"
+      max-width="600"
+      v-if="this.$store.state.loaded && alerts"
+    >
+      <v-expansion-panels>
+        <v-expansion-panel v-for="(item, index) in alerts" :key="index">
+          <v-expansion-panel-header class="text-h6">
+            {{ item.event }} 
+            <template v-slot:actions>
+            <v-icon color="warning">
+              mdi-alert-circle
+            </v-icon>
+          </template>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            ettől: {{ moment.unix(item.start).format("lll") }}
+            eddig: {{ moment.unix(item.end).format("lll") }}
+            {{ item.description }}
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-card>
   </div>
 </template>
 
 <script>
 import cities from "cities.json";
 import accents from "remove-accents";
+import moment from "moment";
 export default {
   name: "WeatherCard",
   data() {
     return {
+      moment: moment,
       pickedDay: "0",
       city: "",
       data: "",
@@ -221,12 +202,9 @@ export default {
     },
   },
   created() {
+    moment.locale('hu');
     //Magyar városok kiválasztása
     this.cities = cities.filter((x) => x.country == "HU");
-
-    // this.$store.dispatch("fetchWeatherData", {
-    //   value: "Budapest",
-    // });
 
     //aktualis nap beállítása
     var weekDays = [
