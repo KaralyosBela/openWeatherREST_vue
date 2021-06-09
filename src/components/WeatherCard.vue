@@ -1,207 +1,209 @@
 <template>
   <div>
-    <v-col cols="12" sm="6" md="6" lg="4" class="mx-auto">
-      <v-autocomplete
-        :items="cities"
-        item-text="name"
-        label="Search a city"
-        v-model="city"
-        @change="getWeatherData(city)"
-        @keyup.enter="getWeatherData(city)"
-      ></v-autocomplete>
-      <v-alert v-if="this.$store.state.error" type="error">
-        {{ errorMessage }}
-      </v-alert>
-    </v-col>
+    <v-container>
+      <v-col cols="12" sm="12" md="6" lg="4" class="mx-auto pa-0">
+        <v-autocomplete
+          solo
+          :items="cities"
+          item-text="name"
+          label="Város keresése"
+          v-model="city"
+          @change="getWeatherData(city)"
+          @keyup.enter="getWeatherData(city)"
+        ></v-autocomplete>
+        <v-alert v-if="this.$store.state.error" type="error">
+          {{ errorMessage }}
+        </v-alert>
+      </v-col>
 
-    <v-row align="center" justify="space-around" class="pb-2" >
-      <v-col><v-btn block rounded color="primary">Hourly</v-btn></v-col>
-      <v-col><v-btn block rounded color="primary">Daily</v-btn></v-col>
-      <v-col><v-btn block rounded color="primary">Weekly</v-btn></v-col>
-    </v-row>
-     
-    <v-card
-      rounded="lg"
-      class="mx-auto ma-2 pa-2"
-      max-width="600"
-      v-if="this.$store.state.loaded"
-    >
-      <v-row align="center" justify="center">
-        <v-col cols="9">
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title class="text-h3">
-                {{ cityName }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="text-h6">
-                {{
-                  currentTime.time +
-                  " " +
-                  currentTime.day +
-                  ", " +
-                  currentWeather.weather[0].description
-                }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item></v-col
-        >
-        <v-col cols="3" class="d-flex justify-center">
-          <v-img
-            id="img"
-            lazy-src="https://picsum.photos/id/11/10/6"
-            max-height="100"
-            max-width="100"
-            :src="weatherIconForCurrent"
+      <v-row align="start" justify="center" class="mt-0">
+        <v-col cols="12" lg="4" md="6" sm="12">
+          <v-card
+            rounded="lg"
+            class="mx-auto ma-2 pa-2 pt-0 mt-0"
+            v-if="this.$store.state.loaded"
           >
-          </v-img
-        ></v-col>
-      </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="9">
+                <v-list-item two-line>
+                  <v-list-item-content>
+                    <v-list-item-title class="text-h3">
+                      {{ cityName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="text-h6">
+                      {{
+                        currentTime.time +
+                        " " +
+                        currentTime.day +
+                        ", " +
+                        currentWeather.weather[0].description
+                      }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item></v-col
+              >
+              <v-col cols="3" class="d-flex justify-center">
+                <v-img
+                  id="img"
+                  lazy-src="https://picsum.photos/id/11/10/6"
+                  max-height="100"
+                  max-width="100"
+                  :src="weatherIconForCurrent"
+                >
+                </v-img
+              ></v-col>
+            </v-row>
 
-      <v-card-text>
-        <v-row align="center">
-          <v-col class="text-h4" cols="12" md="6" sm="12">
-            hőmérséklet <br />
-            {{ currentWeather.temp }} &deg;C
-          </v-col>
+            <v-card-text>
+              <v-row align="center">
+                <v-col class="text-h4" cols="12" md="6" sm="12">
+                  hőmérséklet <br />
+                  {{ currentWeather.temp }} &deg;C
+                </v-col>
 
-          <v-col class="text-h4" cols="12" md="6" sm="12">
-            hőérzet <br />
-            {{ currentWeather.feels_like }} &deg;C
-          </v-col>
-        </v-row>
-      </v-card-text>
+                <v-col class="text-h4" cols="12" md="6" sm="12">
+                  hőérzet <br />
+                  {{ currentWeather.feels_like }} &deg;C
+                </v-col>
+              </v-row>
+            </v-card-text>
 
-      <v-row
-        align="center"
-        justify="space-around"
-        class="text-center pa-1 ma-1"
-      >
-        <v-col>
-          <v-icon class="mb-1">mdi-windsock</v-icon>
-          {{ currentWeather.wind_speed }} km/h
+            <v-row
+              align="center"
+              justify="space-around"
+              class="text-center pa-1 ma-1"
+            >
+              <v-col>
+                <v-icon class="mb-1">mdi-windsock</v-icon>
+                {{ currentWeather.wind_speed }} km/h
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-water-percent</v-icon>
+                {{ currentWeather.humidity }} %
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-weather-sunset-up</v-icon>
+                {{ moment.unix(currentWeather.sunrise).format("LTS") }}
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-weather-sunset-down</v-icon>
+                {{ moment.unix(currentWeather.sunset).format("LTS") }}
+              </v-col>
+            </v-row>
+          </v-card>
         </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-water-percent</v-icon>
-          {{ currentWeather.humidity }} %
-        </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-weather-sunset-up</v-icon>
-          {{ moment.unix(currentWeather.sunrise).format("LTS") }}
-        </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-weather-sunset-down</v-icon>
-          {{ moment.unix(currentWeather.sunset).format("LTS") }}
-        </v-col>
-      </v-row>
-    </v-card> 
-
-    <v-card
-      rounded="lg"
-      class="mx-auto ma-2 pa-2"
-      max-width="600"
-      v-if="this.$store.state.loaded && alerts"
-    >
-      <v-expansion-panels multiple>
-        <v-expansion-panel v-for="(item, index) in alerts" :key="index">
-          <v-expansion-panel-header class="text-h6">
-            {{ item.event }}
-            <template v-slot:actions>
-              <v-icon color="warning"> mdi-alert-circle </v-icon>
-            </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            ettől: {{ moment.unix(item.start).format("lll") }} eddig:
-            {{ moment.unix(item.end).format("lll") }}
-            {{ item.description }}
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-card>
-
-    <v-card
-      rounded="lg"
-      class="mx-auto ma-2 pa-2"
-      max-width="600"
-      v-if="this.$store.state.loaded"
-    >
-      <v-row align="center" justify="center">
-        <v-col cols="9">
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title class="text-h3">
-                {{ cityName }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="text-h6">
-                {{
-                  currentTime.time +
-                  " " +
-                  currentTime.day +
-                  ", " +
-                  dailyWeather[pickedDay].weather[0].description
-                }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item></v-col
-        >
-        <v-col cols="3" class="d-flex justify-center">
-          <v-img
-            id="img"
-            lazy-src="https://picsum.photos/id/11/10/6"
-            max-height="100"
-            max-width="100"
-            :src="weatherIconForDaily"
+        <v-col cols="12" lg="4" md="6" sm="12">
+          <v-card
+            rounded="lg"
+            class="mx-auto ma-2 pa-2 pt-0 mt-0"
+            v-if="this.$store.state.loaded"
           >
-          </v-img
-        ></v-col>
+            <v-row align="center" justify="center">
+              <v-col cols="9">
+                <v-list-item two-line>
+                  <v-list-item-content>
+                    <v-list-item-title class="text-h3">
+                      {{ cityName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="text-h6">
+                      {{
+                        currentTime.time +
+                        " " +
+                        currentTime.day +
+                        ", " +
+                        dailyWeather[pickedDay].weather[0].description
+                      }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item></v-col
+              >
+              <v-col cols="3" class="d-flex justify-center">
+                <v-img
+                  id="img"
+                  lazy-src="https://picsum.photos/id/11/10/6"
+                  max-height="100"
+                  max-width="100"
+                  :src="weatherIconForDaily"
+                >
+                </v-img
+              ></v-col>
+            </v-row>
+
+            <v-card-text>
+              <v-row align="center">
+                <v-col class="text-h4" cols="12" md="6" sm="12">
+                  hőmérséklet <br />
+                  {{ dailyWeather[pickedDay].temp.day }} &deg;C
+                </v-col>
+
+                <v-col class="text-h4" cols="12" md="6" sm="12">
+                  hőérzet <br />
+                  {{ dailyWeather[pickedDay].feels_like.day }} &deg;C
+                </v-col>
+              </v-row>
+            </v-card-text>
+
+            <v-row
+              align="center"
+              justify="space-around"
+              class="text-center pa-1 ma-1"
+            >
+              <v-col>
+                <v-icon class="mb-1">mdi-windsock</v-icon>
+                {{ dailyWeather[pickedDay].wind_speed }} km/h
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-water-percent</v-icon>
+                {{ dailyWeather[pickedDay].humidity }} %
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-weather-sunset-up</v-icon>
+                {{ moment.unix(dailyWeather[pickedDay].sunrise).format("LTS") }}
+              </v-col>
+              <v-col>
+                <v-icon class="mb-1">mdi-weather-sunset-down</v-icon>
+                {{ moment.unix(dailyWeather[pickedDay].sunset).format("LTS") }}
+              </v-col>
+            </v-row>
+
+            <v-slider
+              v-model="pickedDay"
+              max="6"
+              :tick-labels="nextSevenDays"
+              class="mx-4"
+              ticks
+              track-fill-color="blue"
+              @change="changePickedDay()"
+            ></v-slider>
+          </v-card>
+        </v-col>
+        <v-col cols="12" lg="4" md="12" sm="12">
+          <v-card
+            rounded="lg"
+            class="mx-auto ma-2 pa-2 pt-0 mt-0"
+            v-if="this.$store.state.loaded && alerts"
+          >
+            <v-row class="pa-3">
+              <v-expansion-panels multiple>
+                <v-expansion-panel v-for="(item, index) in alerts" :key="index">
+                  <v-expansion-panel-header class="text-h6">
+                    {{ item.event }}
+                    <template v-slot:actions>
+                      <v-icon color="warning"> mdi-alert-circle </v-icon>
+                    </template>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    ettől: {{ moment.unix(item.start).format("lll") }} eddig:
+                    {{ moment.unix(item.end).format("lll") }}
+                    {{ item.description }}
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-row>
+          </v-card>
+        </v-col>
       </v-row>
-
-      <v-card-text>
-        <v-row align="center">
-          <v-col class="text-h4" cols="12" md="6" sm="12">
-            hőmérséklet <br />
-            {{ dailyWeather[pickedDay].temp.day }} &deg;C
-          </v-col>
-
-          <v-col class="text-h4" cols="12" md="6" sm="12">
-            hőérzet <br />
-            {{ dailyWeather[pickedDay].feels_like.day }} &deg;C
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-row
-        align="center"
-        justify="space-around"
-        class="text-center pa-1 ma-1"
-      >
-        <v-col>
-          <v-icon class="mb-1">mdi-windsock</v-icon>
-          {{ dailyWeather[pickedDay].wind_speed }} km/h
-        </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-water-percent</v-icon>
-          {{ dailyWeather[pickedDay].humidity }} %
-        </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-weather-sunset-up</v-icon>
-          {{ moment.unix(dailyWeather[pickedDay].sunrise).format("LTS") }}
-        </v-col>
-        <v-col>
-          <v-icon class="mb-1">mdi-weather-sunset-down</v-icon>
-          {{ moment.unix(dailyWeather[pickedDay].sunset).format("LTS") }}
-        </v-col>
-      </v-row>
-
-      <v-slider
-        v-model="pickedDay"
-        max="6"
-        :tick-labels="nextSevenDays"
-        class="mx-4"
-        ticks
-        track-fill-color="blue"
-        @change="changePickedDay()"
-      ></v-slider>
-    </v-card>
+    </v-container>
   </div>
 </template>
 
